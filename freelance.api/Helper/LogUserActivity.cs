@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using freelance.api.Data;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace freelance.api.Helper
@@ -13,10 +15,10 @@ namespace freelance.api.Helper
         {
             var resultContext = await next();
             var userId = int.Parse(resultContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var repo = resultContext.HttpContext.RequestServices.GetService<IDataRepository>();
-            var user = await repo.GetUser(userId);
+            var dbContext = resultContext.HttpContext.RequestServices.GetService<DataContext>();
+            var user = await dbContext.Users.Where(x => x.Id == userId).FirstOrDefaultAsync();
             user.LastActive = DateTime.Now;
-            await repo.SaveAll();
+            await dbContext.SaveChangesAsync();
         }
     }
 }

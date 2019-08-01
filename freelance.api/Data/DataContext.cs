@@ -15,6 +15,10 @@ namespace freelance.api.Data
 
         public DbSet<Value> Values { get; set; }
 
+        public DbSet<Customer> Customers { get; set; }
+
+        public DbSet<Product> Products { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

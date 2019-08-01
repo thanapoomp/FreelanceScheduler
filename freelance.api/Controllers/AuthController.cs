@@ -46,12 +46,13 @@ namespace freelance.api.Controllers
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
             var user = await _userManager.FindByNameAsync(userForLoginDto.Username);
-
-            var result = await _signInManager.CheckPasswordSignInAsync(user,userForLoginDto.Password,false);
-
-            if (result.Succeeded)
+            if (user != null)
             {
-                return Ok(new {token = GenerateJwtToken(user), user = user});
+                var result = await _signInManager.CheckPasswordSignInAsync(user, userForLoginDto.Password, false);
+                if (result.Succeeded)
+                {
+                    return Ok(new { token = GenerateJwtToken(user), user = _mapper.Map<UserForReturnDto>(user) });
+                }
             }
             return Unauthorized();
         }
